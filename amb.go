@@ -78,3 +78,31 @@ func all(accum Var, f Func, vars ...Var) Var {
 	}
 	return nil
 }
+
+// Ord is ambiguous operator implementation,
+// that returns in single pass first strict ordered ambiguous variables matching disambiguous predicate.
+func Ord(f Func, vars ...Var) Var {
+	defer func() { _ = recover() }()
+	for i := 0; ; i++ {
+		var vt Var
+		var m bool
+		for _, v := range vars {
+			l := len(v)
+			switch {
+			case l == 0: // in case of empty var - skip it.
+				break
+			case i >= l: // in case of var overflow - try last value.
+				vt = append(vt, v[l-1])
+			default: // otherwise var is lower than index - try value at index.
+				vt = append(vt, v[i])
+				m = true
+			}
+		}
+		if !m {
+			return nil
+		}
+		if ok := f(vt...); ok {
+			return vt
+		}
+	}
+}
