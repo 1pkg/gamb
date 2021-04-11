@@ -8,7 +8,7 @@ func NewVar(v ...interface{}) Var {
 	return Var(v)
 }
 
-// Func defines disambiguous predicate fucntion type,
+// Func defines disambiguous predicate function type,
 // that checks provided input against some condition.
 type Func func(v ...interface{}) bool
 

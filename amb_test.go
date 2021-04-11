@@ -102,7 +102,7 @@ func TestAll(t *testing.T) {
 			fun: func(v ...interface{}) bool { return v[0].(int)+v[1].(int)+v[2].(int) == 15 },
 			out: NewVar(NewVar(10, 1, 4), NewVar(10, 2, 3), NewVar(10, 3, 2)),
 		},
-		"all operator should produce expected result on multiple vars with duplicats": {
+		"all operator should produce expected result on multiple vars with duplicates": {
 			in: []Var{
 				NewVar(10, 10, 10, 20, 20),
 				NewVar(1, 2, 3, 5, 10),
