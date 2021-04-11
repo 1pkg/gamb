@@ -22,6 +22,17 @@ func TestAmb(t *testing.T) {
 			},
 			out: NewVar(10, 1, 4),
 		},
+		"amb operator should produce expected result on multiple vars long sequence": {
+			in: []Var{
+				NewVar(10, 20, 30, 40, 55, 100, 99, 50),
+				NewVar(1, 2, 3, 5, 11),
+				NewVar(2, 3, 4, 0),
+			},
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)*v[1].(int)+v[2].(int) == 550
+			},
+			out: NewVar(50, 11, 0),
+		},
 		"amb operator should produce expected result on single var": {
 			in: []Var{
 				NewVar(11, 15, 21, 30),
@@ -106,6 +117,17 @@ func TestAll(t *testing.T) {
 				return v[0].(int)+v[1].(int)+v[2].(int) == 15
 			},
 			out: NewVar(NewVar(10, 1, 4), NewVar(10, 2, 3), NewVar(10, 3, 2)),
+		},
+		"all operator should produce expected result on multiple vars with duplicats": {
+			in: []Var{
+				NewVar(10, 10, 10, 20, 20),
+				NewVar(1, 2, 3, 5, 10),
+				NewVar(1),
+			},
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)*v[1].(int)*v[2].(int) == 20
+			},
+			out: NewVar(NewVar(10, 2, 1), NewVar(10, 2, 1), NewVar(10, 2, 1), NewVar(20, 1, 1), NewVar(20, 1, 1)),
 		},
 		"all operator should produce expected result on single var": {
 			in: []Var{

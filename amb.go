@@ -1,7 +1,5 @@
 package gamb
 
-type Operator func(Func, ...Var) Var
-
 type Var []interface{}
 
 func NewVar(v ...interface{}) Var {
@@ -22,15 +20,19 @@ func amb(accum Var, f Func, vars ...Var) Var {
 				return vt
 			}
 		}
+		// in case of empty var, we just need to go one level deeper with the same accumulator value.
 		if len(v) == 0 {
 			if vt := amb(accum, f, vars[1:]...); vt != nil {
 				return vt
 			}
 		}
+		// terminate parent loop unconditionally.
 		// nolint
 		return nil
 	}
+	// we can execute this check only for leaf most iterations.
 	if ok := f(accum...); ok {
+		// reslice accumulator here to prevent memory sharing with parent loops.
 		return NewVar(accum...)
 	}
 	return nil
@@ -49,15 +51,21 @@ func all(accum Var, f Func, vars ...Var) Var {
 				vout = append(vout, vt...)
 			}
 		}
+		// in case of empty var, we just need to go one level deeper with the same accumulator value.
 		if len(v) == 0 {
 			if vt := all(accum, f, vars[1:]...); vt != nil {
 				vout = append(vout, vt...)
 			}
 		}
+		// terminate parent loop unconditionally.
 		// nolint
 		return vout
 	}
+	// we can execute this check only for leaf most iterations.
 	if ok := f(accum...); ok {
+		// reslice accumulator here to prevent memory sharing with parent loops.
+		// also wrap it in var twice to follow slice of slices logic,
+		// second wrapping will be consumed in parent loops.
 		return NewVar(append(vout, accum...))
 	}
 	return nil
