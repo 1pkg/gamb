@@ -7,63 +7,75 @@ import (
 
 func TestAmb(t *testing.T) {
 	table := map[string]struct {
-		in  []AmbVar
-		fun AmbFunc
-		out AmbVar
+		in  []Var
+		fun Func
+		out Var
 	}{
 		"amb operator should produce expected result on multiple vars": {
-			in: []AmbVar{
-				NewAmbVar(10, 20, 30),
-				NewAmbVar(1, 2, 3, 5, 10),
-				NewAmbVar(2, 3, 4),
+			in: []Var{
+				NewVar(10, 20, 30),
+				NewVar(1, 2, 3, 5, 10),
+				NewVar(2, 3, 4),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[0].(int)+vi[1].(int)-vi[2].(int) == 7
 			},
-			out: NewAmbVar(10, 1, 4),
+			out: NewVar(10, 1, 4),
 		},
 		"amb operator should produce expected result on single var": {
-			in: []AmbVar{
-				NewAmbVar(11, 15, 21, 30),
+			in: []Var{
+				NewVar(11, 15, 21, 30),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[0].(int)%5 == 0
 			},
-			out: NewAmbVar(15),
+			out: NewVar(15),
 		},
 		"amb operator should skip empty vars and produce expected result on multiple vars": {
-			in: []AmbVar{
-				NewAmbVar(100, 200, 300),
-				NewAmbVar(),
-				NewAmbVar(),
-				NewAmbVar(6),
-				NewAmbVar(2, 10),
+			in: []Var{
+				NewVar(100, 200, 300),
+				NewVar(),
+				NewVar(),
+				NewVar(6),
+				NewVar(2, 10),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[0].(int)/vi[2].(int) == 30
 			},
-			out: NewAmbVar(300, 6, 10),
+			out: NewVar(300, 6, 10),
 		},
 		"amb operator should produce expected result on multiple unequal vars": {
-			in: []AmbVar{
-				NewAmbVar("1"),
-				NewAmbVar("2", "3"),
-				NewAmbVar("4", "5", "6"),
-				NewAmbVar("7", "8", "9", "A"),
+			in: []Var{
+				NewVar("1"),
+				NewVar("2", "3"),
+				NewVar("4", "5", "6"),
+				NewVar("7", "8", "9", "A"),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[3].(string)+vi[2].(string)+vi[1].(string) == "842"
 			},
-			out: NewAmbVar("1", "2", "4", "8"),
+			out: NewVar("1", "2", "4", "8"),
 		},
 		"amb operator should produce empty result on if there is no match": {
-			in: []AmbVar{
-				NewAmbVar(10, 20, 30),
-				NewAmbVar(1, 2, 3),
-				NewAmbVar(10, 20, 30),
+			in: []Var{
+				NewVar(10, 20, 30),
+				NewVar(1, 2, 3),
+				NewVar(10, 20, 30),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[0].(int)*vi[1].(int)*vi[2].(int) == 101
+			},
+			out: nil,
+		},
+		"amb should operator never panic": {
+			in: []Var{
+				NewVar("1"),
+				NewVar("2", "3"),
+				NewVar("4", "5", "6"),
+				NewVar("7", "8", "9", "A"),
+			},
+			fun: func(vi ...interface{}) bool {
+				return vi[10].(string) == "panic"
 			},
 			out: nil,
 		},
@@ -78,65 +90,77 @@ func TestAmb(t *testing.T) {
 	}
 }
 
-func TestAmbAll(t *testing.T) {
+func TestAll(t *testing.T) {
 	table := map[string]struct {
-		in  []AmbVar
-		fun AmbFunc
-		out AmbVar
+		in  []Var
+		fun Func
+		out Var
 	}{
-		"amb all operator should produce expected result on multiple vars": {
-			in: []AmbVar{
-				NewAmbVar(10, 20, 30),
-				NewAmbVar(1, 2, 3, 5, 10),
-				NewAmbVar(2, 3, 4),
+		"all operator should produce expected result on multiple vars": {
+			in: []Var{
+				NewVar(10, 20, 30),
+				NewVar(1, 2, 3, 5, 10),
+				NewVar(2, 3, 4),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[0].(int)+vi[1].(int)+vi[2].(int) == 15
 			},
-			out: NewAmbVar(NewAmbVar(10, 3, 2), NewAmbVar(10, 2, 3), NewAmbVar(10, 2, 3), NewAmbVar(10, 1, 4)),
+			out: NewVar(NewVar(10, 3, 2), NewVar(10, 2, 3), NewVar(10, 1, 4)),
 		},
-		"amb all operator should produce expected result on single var": {
-			in: []AmbVar{
-				NewAmbVar(11, 15, 21, 30),
+		"all operator should produce expected result on single var": {
+			in: []Var{
+				NewVar(11, 15, 21, 30),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[0].(int)%5 == 0
 			},
-			out: NewAmbVar(NewAmbVar(15), NewAmbVar(30)),
+			out: NewVar(NewVar(15), NewVar(30)),
 		},
-		"amb all operator should skip empty vars and produce expected result on multiple vars": {
-			in: []AmbVar{
-				NewAmbVar(100, 200, 300),
-				NewAmbVar(),
-				NewAmbVar(),
-				NewAmbVar(6),
-				NewAmbVar(2, 10),
+		"all operator should skip empty vars and produce expected result on multiple vars": {
+			in: []Var{
+				NewVar(100, 200, 300),
+				NewVar(),
+				NewVar(),
+				NewVar(6),
+				NewVar(2, 10),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[0].(int)/vi[2].(int) == 30
 			},
-			out: NewAmbVar(NewAmbVar(300, 6, 10), NewAmbVar(300, 6, 10), NewAmbVar(300, 6, 10)),
+			out: NewVar(NewVar(300, 6, 10)),
 		},
-		"amb all operator should produce expected result on multiple unequal vars": {
-			in: []AmbVar{
-				NewAmbVar("1"),
-				NewAmbVar("2", "3"),
-				NewAmbVar("4", "5", "6"),
-				NewAmbVar("7", "8", "9", "A"),
+		"all operator should produce expected result on multiple unequal vars": {
+			in: []Var{
+				NewVar("1"),
+				NewVar("2", "3"),
+				NewVar("4", "5", "6"),
+				NewVar("7", "8", "9", "A"),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[3].(string)+vi[2].(string)+vi[1].(string) == "842"
 			},
-			out: NewAmbVar(NewAmbVar("1", "2", "4", "8")),
+			out: NewVar(NewVar("1", "2", "4", "8")),
 		},
-		"amb all operator should produce empty result on if there is no match": {
-			in: []AmbVar{
-				NewAmbVar(10, 20, 30),
-				NewAmbVar(1, 2, 3),
-				NewAmbVar(10, 20, 30),
+		"all operator should produce empty result on if there is no match": {
+			in: []Var{
+				NewVar(10, 20, 30),
+				NewVar(1, 2, 3),
+				NewVar(10, 20, 30),
 			},
 			fun: func(vi ...interface{}) bool {
 				return vi[0].(int)*vi[1].(int)*vi[2].(int) == 101
+			},
+			out: nil,
+		},
+		"all should operator never panic": {
+			in: []Var{
+				NewVar("1"),
+				NewVar("2", "3"),
+				NewVar("4", "5", "6"),
+				NewVar("7", "8", "9", "A"),
+			},
+			fun: func(vi ...interface{}) bool {
+				return vi[10].(string) == "panic"
 			},
 			out: nil,
 		},
@@ -145,7 +169,7 @@ func TestAmbAll(t *testing.T) {
 		t.Run(tname, func(t *testing.T) {
 			out := All(tcase.fun, tcase.in...)
 			if !reflect.DeepEqual(tcase.out, out) {
-				t.Fatalf("amb all expected result %v but got %v", tcase.out, out)
+				t.Fatalf("all expected result %v but got %v", tcase.out, out)
 			}
 		})
 	}
