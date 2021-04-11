@@ -17,8 +17,8 @@ func TestAmb(t *testing.T) {
 				NewVar(1, 2, 3, 5, 10),
 				NewVar(2, 3, 4),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[0].(int)+vi[1].(int)-vi[2].(int) == 7
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)+v[1].(int)-v[2].(int) == 7
 			},
 			out: NewVar(10, 1, 4),
 		},
@@ -26,8 +26,8 @@ func TestAmb(t *testing.T) {
 			in: []Var{
 				NewVar(11, 15, 21, 30),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[0].(int)%5 == 0
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)%5 == 0
 			},
 			out: NewVar(15),
 		},
@@ -39,8 +39,8 @@ func TestAmb(t *testing.T) {
 				NewVar(6),
 				NewVar(2, 10),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[0].(int)/vi[2].(int) == 30
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)/v[2].(int) == 30
 			},
 			out: NewVar(300, 6, 10),
 		},
@@ -51,8 +51,8 @@ func TestAmb(t *testing.T) {
 				NewVar("4", "5", "6"),
 				NewVar("7", "8", "9", "A"),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[3].(string)+vi[2].(string)+vi[1].(string) == "842"
+			fun: func(v ...interface{}) bool {
+				return v[3].(string)+v[2].(string)+v[1].(string) == "842"
 			},
 			out: NewVar("1", "2", "4", "8"),
 		},
@@ -62,8 +62,8 @@ func TestAmb(t *testing.T) {
 				NewVar(1, 2, 3),
 				NewVar(10, 20, 30),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[0].(int)*vi[1].(int)*vi[2].(int) == 101
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)*v[1].(int)*v[2].(int) == 101
 			},
 			out: nil,
 		},
@@ -74,8 +74,8 @@ func TestAmb(t *testing.T) {
 				NewVar("4", "5", "6"),
 				NewVar("7", "8", "9", "A"),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[10].(string) == "panic"
+			fun: func(v ...interface{}) bool {
+				return v[10].(string) == "panic"
 			},
 			out: nil,
 		},
@@ -102,17 +102,17 @@ func TestAll(t *testing.T) {
 				NewVar(1, 2, 3, 5, 10),
 				NewVar(2, 3, 4),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[0].(int)+vi[1].(int)+vi[2].(int) == 15
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)+v[1].(int)+v[2].(int) == 15
 			},
-			out: NewVar(NewVar(10, 3, 2), NewVar(10, 2, 3), NewVar(10, 1, 4)),
+			out: NewVar(NewVar(10, 1, 4), NewVar(10, 2, 3), NewVar(10, 3, 2)),
 		},
 		"all operator should produce expected result on single var": {
 			in: []Var{
 				NewVar(11, 15, 21, 30),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[0].(int)%5 == 0
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)%5 == 0
 			},
 			out: NewVar(NewVar(15), NewVar(30)),
 		},
@@ -124,8 +124,8 @@ func TestAll(t *testing.T) {
 				NewVar(6),
 				NewVar(2, 10),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[0].(int)/vi[2].(int) == 30
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)/v[2].(int) == 30
 			},
 			out: NewVar(NewVar(300, 6, 10)),
 		},
@@ -136,8 +136,8 @@ func TestAll(t *testing.T) {
 				NewVar("4", "5", "6"),
 				NewVar("7", "8", "9", "A"),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[3].(string)+vi[2].(string)+vi[1].(string) == "842"
+			fun: func(v ...interface{}) bool {
+				return v[3].(string)+v[2].(string)+v[1].(string) == "842"
 			},
 			out: NewVar(NewVar("1", "2", "4", "8")),
 		},
@@ -147,8 +147,8 @@ func TestAll(t *testing.T) {
 				NewVar(1, 2, 3),
 				NewVar(10, 20, 30),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[0].(int)*vi[1].(int)*vi[2].(int) == 101
+			fun: func(v ...interface{}) bool {
+				return v[0].(int)*v[1].(int)*v[2].(int) == 101
 			},
 			out: nil,
 		},
@@ -159,8 +159,8 @@ func TestAll(t *testing.T) {
 				NewVar("4", "5", "6"),
 				NewVar("7", "8", "9", "A"),
 			},
-			fun: func(vi ...interface{}) bool {
-				return vi[10].(string) == "panic"
+			fun: func(v ...interface{}) bool {
+				return v[10].(string) == "panic"
 			},
 			out: nil,
 		},
