@@ -77,3 +77,76 @@ func TestAmb(t *testing.T) {
 		})
 	}
 }
+
+func TestAmbAll(t *testing.T) {
+	table := map[string]struct {
+		in  []AmbVar
+		fun AmbFunc
+		out AmbVar
+	}{
+		"amb all operator should produce expected result on multiple vars": {
+			in: []AmbVar{
+				NewAmbVar(10, 20, 30),
+				NewAmbVar(1, 2, 3, 5, 10),
+				NewAmbVar(2, 3, 4),
+			},
+			fun: func(vi ...interface{}) bool {
+				return vi[0].(int)+vi[1].(int)+vi[2].(int) == 15
+			},
+			out: NewAmbVar(NewAmbVar(10, 3, 2), NewAmbVar(10, 2, 3), NewAmbVar(10, 2, 3), NewAmbVar(10, 1, 4)),
+		},
+		"amb all operator should produce expected result on single var": {
+			in: []AmbVar{
+				NewAmbVar(11, 15, 21, 30),
+			},
+			fun: func(vi ...interface{}) bool {
+				return vi[0].(int)%5 == 0
+			},
+			out: NewAmbVar(NewAmbVar(15), NewAmbVar(30)),
+		},
+		"amb all operator should skip empty vars and produce expected result on multiple vars": {
+			in: []AmbVar{
+				NewAmbVar(100, 200, 300),
+				NewAmbVar(),
+				NewAmbVar(),
+				NewAmbVar(6),
+				NewAmbVar(2, 10),
+			},
+			fun: func(vi ...interface{}) bool {
+				return vi[0].(int)/vi[2].(int) == 30
+			},
+			out: NewAmbVar(NewAmbVar(300, 6, 10), NewAmbVar(300, 6, 10), NewAmbVar(300, 6, 10)),
+		},
+		"amb all operator should produce expected result on multiple unequal vars": {
+			in: []AmbVar{
+				NewAmbVar("1"),
+				NewAmbVar("2", "3"),
+				NewAmbVar("4", "5", "6"),
+				NewAmbVar("7", "8", "9", "A"),
+			},
+			fun: func(vi ...interface{}) bool {
+				return vi[3].(string)+vi[2].(string)+vi[1].(string) == "842"
+			},
+			out: NewAmbVar(NewAmbVar("1", "2", "4", "8")),
+		},
+		"amb all operator should produce empty result on if there is no match": {
+			in: []AmbVar{
+				NewAmbVar(10, 20, 30),
+				NewAmbVar(1, 2, 3),
+				NewAmbVar(10, 20, 30),
+			},
+			fun: func(vi ...interface{}) bool {
+				return vi[0].(int)*vi[1].(int)*vi[2].(int) == 101
+			},
+			out: nil,
+		},
+	}
+	for tname, tcase := range table {
+		t.Run(tname, func(t *testing.T) {
+			out := All(tcase.fun, tcase.in...)
+			if !reflect.DeepEqual(tcase.out, out) {
+				t.Fatalf("amb all expected result %v but got %v", tcase.out, out)
+			}
+		})
+	}
+}

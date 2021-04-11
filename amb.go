@@ -25,6 +25,22 @@ func Amb(f AmbFunc, vars ...AmbVar) AmbVar {
 	return set
 }
 
+func All(f AmbFunc, vars ...AmbVar) AmbVar {
+	var accum AmbVar
+	if set, ok := try(f, vars); ok {
+		accum = append(accum, set)
+	}
+	for i, v := range vars {
+		if len(v) <= 1 {
+			continue
+		}
+		if set := All(f, mutate(vars, i)...); set != nil {
+			accum = append(accum, set...)
+		}
+	}
+	return accum
+}
+
 func mutate(vars []AmbVar, i int) []AmbVar {
 	mvars := make([]AmbVar, len(vars))
 	for i := range vars {
