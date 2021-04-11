@@ -14,7 +14,7 @@ func Amb(f AmbFunc, vars ...AmbVar) AmbVar {
 	backtrack:
 		for i, v := range vars {
 			if len(v) <= 1 {
-				break
+				continue
 			}
 			if tset := Amb(f, mutate(vars, i)...); tset != nil {
 				set = tset
@@ -31,9 +31,7 @@ func mutate(vars []AmbVar, i int) []AmbVar {
 		mvars[i] = make(AmbVar, len(vars[i]))
 		copy(mvars[i], vars[i])
 	}
-	if len(mvars[i]) > 1 {
-		mvars[i] = mvars[i][1:]
-	}
+	mvars[i] = mvars[i][1:]
 	return mvars
 }
 
