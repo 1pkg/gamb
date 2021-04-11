@@ -1,13 +1,19 @@
 package gamb
 
+// Var defines ambiguous variable type.
 type Var []interface{}
 
+// NewVar creates instance of new ambiguous variable from provided input.
 func NewVar(v ...interface{}) Var {
 	return Var(v)
 }
 
+// Func defines disambiguous predicate fucntion type,
+// that checks provided input against some condition.
 type Func func(v ...interface{}) bool
 
+// Amb is ambiguous operator implementation,
+// that returns first ambiguous variable matching disambiguous predicate.
 func Amb(f Func, vars ...Var) Var {
 	defer func() { _ = recover() }()
 	return amb(nil, f, vars...)
@@ -38,6 +44,8 @@ func amb(accum Var, f Func, vars ...Var) Var {
 	return nil
 }
 
+// All is ambiguous operator implementation,
+// that returns all ambiguous variables matching disambiguous predicate.
 func All(f Func, vars ...Var) Var {
 	defer func() { _ = recover() }()
 	return all(nil, f, vars...)
